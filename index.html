@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抽奖大转盘</title>
+    <script src="https://cdn.jsdelivr.net/npm/lucky-canvas@1.7.23"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #my-lucky {
+            margin: 0 auto;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="my-lucky"></div>
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <p id="resultText"></p>
+        </div>
+    </div>
+
+    <script>
+        const myLucky = new LuckyCanvas.LuckyWheel('#my-lucky', {
+            width: '300px',
+            height: '300px',
+            blocks: [{ padding: '10px', background: '#869cfa' }],
+            prizes: [
+                { background: '#e9e8fe', fonts: [{ text: '1' }] },
+                { background: '#b8c5f2', fonts: [{ text: '2' }] },
+                { background: '#e9e8fe', fonts: [{ text: '3' }] },
+                { background: '#b8c5f2', fonts: [{ text: '4' }] },
+                { background: '#e9e8fe', fonts: [{ text: '5' }] },
+                { background: '#b8c5f2', fonts: [{ text: '6' }] },
+            ],
+            buttons: [
+                { radius: '40%', background: '#617df2' },
+                { radius: '35%', background: '#afc8ff' },
+                {
+                    radius: '30%', background: '#869cfa',
+                    pointer: true,
+                    fonts: [{ text: '开始', top: '-10px' }]
+                },
+            ],
+            start: function() {
+                myLucky.play()
+                setTimeout(() => {
+                    const randomIndex = Math.floor(Math.random() * 6);
+                    myLucky.stop(randomIndex)
+                }, 3000)
+            },
+            end: function(prize) {
+                const resultText = document.getElementById('resultText');
+                const modal = document.getElementById('resultModal');
+                const prizeNumber = prize.fonts[0].text;
+                let message = '';
+
+                if (prizeNumber === '1') {
+                    message = "😢啊奥，你的运气被积攒到下半年了";
+                } else if (['2', '3', '4'].includes(prizeNumber)) {
+                    message = `🎆哎呦不错奥，${prizeNumber}倍奖金，恭喜恭喜`;
+                } else if (['5', '6'].includes(prizeNumber)) {
+                    message = `🎆🧨我擦嘞，${prizeNumber}倍大奖，被你赚到啦🧨🎆`;
+                }
+
+                resultText.innerText = message;
+                modal.style.display = "block";
+
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>
